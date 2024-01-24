@@ -8,6 +8,13 @@
         public string Password { get; set; }
         public bool IsStatus { get; set; }
 
+        public List<Blog>? Blogs { get; set; }
+
+        public List<Order>? Orders { get; set; }
+
+        public Cart? Cart { get; set; }
+
+
     }
 
 }

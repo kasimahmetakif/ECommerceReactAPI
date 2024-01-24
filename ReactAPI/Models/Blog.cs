@@ -1,4 +1,6 @@
-﻿namespace ReactAPI.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace ReactAPI.Models
 {
     public class Blog
     {
@@ -10,6 +12,9 @@
         public DateTime Date { get; set; }
         public string Img { get; set; }
         public bool IsStatus { get; set; }
+        [ForeignKey("UserId")]
+        public int UserId { get; set; }
+        public User User { get; set; }
 
     }
 

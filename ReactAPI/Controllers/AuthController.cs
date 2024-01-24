@@ -9,8 +9,14 @@ namespace ReactAPI.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        readonly IAuthService authService;
-        DataContext db = new DataContext();
+        private readonly IAuthService authService;
+        private readonly DataContext db;
+
+        public AuthController(IAuthService authService, DataContext context)
+        {
+            this.authService = authService;
+            this.db = context;
+        }
 
         public AuthController(IAuthService authService)
         {
@@ -18,6 +24,7 @@ namespace ReactAPI.Controllers
         }
 
         [HttpPost("LoginUser")]
+        [AllowAnonymous]
         public async Task<ActionResult<UserLoginResponse>> LoginUserAsync([FromBody] UserLoginRequest request)
         {
             var result = await authService.LoginUserAsync(request);

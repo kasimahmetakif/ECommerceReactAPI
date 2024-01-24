@@ -3,6 +3,9 @@ using ReactAPI.Models.Interfaces;
 using ReactAPI.Models.Services;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.Extensions.Configuration;
+using ReactAPI.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ReactAPI
 {
@@ -18,6 +21,8 @@ namespace ReactAPI
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
+
 
             builder.Services.AddTransient<IAuthService, AuthService>();
 
@@ -44,16 +49,17 @@ namespace ReactAPI
 
             builder.Services.AddAuthorization();
 
-            //builder.Services.AddCors(options =>
-            //{
-            //    options.AddPolicy("MyAllowSpecificOrigins",
-            //    policy =>
-            //    {
-            //        policy.AllowAnyOrigin()
-            //        .AllowAnyHeader()
-            //        .AllowAnyMethod();
-            //    });
-            //});
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("MyAllowSpecificOrigins",
+                policy =>
+                {
+                    policy.AllowAnyOrigin()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
+                });
+            });
+
 
             var app = builder.Build();
 
@@ -66,10 +72,9 @@ namespace ReactAPI
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
             app.UseAuthentication();
+            app.UseAuthorization();
 
-            //app.UseCors("MyAllowSpecificOrigins");
 
             app.MapControllers();
 
@@ -77,3 +82,7 @@ namespace ReactAPI
         }
     }
 }
+
+
+
+

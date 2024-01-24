@@ -7,6 +7,7 @@
         public string Description { get; set; }
         public string ImageSlug { get; set; }
         public bool IsStatus { get; set; }
+        public List<Product>? Product { get; set; }
     }
 
 }

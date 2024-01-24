@@ -56,7 +56,12 @@ namespace ReactAPI.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Blog");
                 });
@@ -74,6 +79,9 @@ namespace ReactAPI.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
                     b.ToTable("Cart");
                 });
 
@@ -85,7 +93,7 @@ namespace ReactAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int?>("CartId")
+                    b.Property<int>("CartId")
                         .HasColumnType("int");
 
                     b.Property<int>("ProductId")
@@ -100,6 +108,8 @@ namespace ReactAPI.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CartId");
+
+                    b.HasIndex("ProductId");
 
                     b.ToTable("CartItem");
                 });
@@ -148,6 +158,8 @@ namespace ReactAPI.Migrations
 
                     b.HasKey("OrderId");
 
+                    b.HasIndex("UserId");
+
                     b.ToTable("Order");
                 });
 
@@ -165,7 +177,7 @@ namespace ReactAPI.Migrations
                     b.Property<bool>("IsStatus")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("OrderId")
+                    b.Property<int>("OrderId")
                         .HasColumnType("int");
 
                     b.Property<int>("ProductId")
@@ -178,6 +190,8 @@ namespace ReactAPI.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductId");
 
                     b.ToTable("OrderProduct");
                 });
@@ -212,6 +226,8 @@ namespace ReactAPI.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CategoryId");
+
                     b.ToTable("Product");
                 });
 
@@ -243,18 +259,86 @@ namespace ReactAPI.Migrations
                     b.ToTable("User");
                 });
 
+            modelBuilder.Entity("ReactAPI.Models.Blog", b =>
+                {
+                    b.HasOne("ReactAPI.Models.User", "User")
+                        .WithMany("Blogs")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ReactAPI.Models.Cart", b =>
+                {
+                    b.HasOne("ReactAPI.Models.User", "User")
+                        .WithOne("Cart")
+                        .HasForeignKey("ReactAPI.Models.Cart", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ReactAPI.Models.CartItem", b =>
                 {
-                    b.HasOne("ReactAPI.Models.Cart", null)
+                    b.HasOne("ReactAPI.Models.Cart", "Cart")
                         .WithMany("Items")
-                        .HasForeignKey("CartId");
+                        .HasForeignKey("CartId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ReactAPI.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("ReactAPI.Models.Order", b =>
+                {
+                    b.HasOne("ReactAPI.Models.User", "User")
+                        .WithMany("Orders")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ReactAPI.Models.OrderProduct", b =>
                 {
-                    b.HasOne("ReactAPI.Models.Order", null)
+                    b.HasOne("ReactAPI.Models.Order", "Order")
                         .WithMany("Products")
-                        .HasForeignKey("OrderId");
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ReactAPI.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("ReactAPI.Models.Product", b =>
+                {
+                    b.HasOne("ReactAPI.Models.Category", "Category")
+                        .WithMany("Product")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
                 });
 
             modelBuilder.Entity("ReactAPI.Models.Cart", b =>
@@ -262,9 +346,23 @@ namespace ReactAPI.Migrations
                     b.Navigation("Items");
                 });
 
+            modelBuilder.Entity("ReactAPI.Models.Category", b =>
+                {
+                    b.Navigation("Product");
+                });
+
             modelBuilder.Entity("ReactAPI.Models.Order", b =>
                 {
                     b.Navigation("Products");
+                });
+
+            modelBuilder.Entity("ReactAPI.Models.User", b =>
+                {
+                    b.Navigation("Blogs");
+
+                    b.Navigation("Cart");
+
+                    b.Navigation("Orders");
                 });
 #pragma warning restore 612, 618
         }

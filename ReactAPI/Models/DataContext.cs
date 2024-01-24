@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Design;
 using ReactAPI.Models;
 
 namespace ReactAPI.Models
@@ -8,7 +7,7 @@ namespace ReactAPI.Models
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"data source=AHMETAKIF;initial catalog=ReactApiDb;integrated security=true");
+            optionsBuilder.UseSqlServer(@"data source=AHMETAKIF;initial catalog=ReactApiDb2;integrated security=true");
         }
 
         public DbSet<Category> Category { get; set; }
@@ -18,6 +17,5 @@ namespace ReactAPI.Models
         public DbSet<Order> Order { get; set; }
         public DbSet<Cart> Cart { get; set; }
         public DbSet<CartItem> CartItem { get; set; }
-
     }
 }
