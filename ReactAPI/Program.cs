@@ -1,3 +1,9 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using ReactAPI.Models.Interfaces;
+using ReactAPI.Models.Services;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+
 namespace ReactAPI
 {
     public class Program
@@ -13,6 +19,42 @@ namespace ReactAPI
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddTransient<IAuthService, AuthService>();
+
+            builder.Services.AddTransient<ITokenService, TokenService>();
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(o =>
+            {
+                o.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidIssuer = builder.Configuration["AppSettings:ValidIssuer"],
+                    ValidAudience = builder.Configuration["AppSettings:ValidAudience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Secret"])),
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = false,
+                    ValidateIssuerSigningKey = true
+                };
+            });
+
+            builder.Services.AddAuthorization();
+
+            //builder.Services.AddCors(options =>
+            //{
+            //    options.AddPolicy("MyAllowSpecificOrigins",
+            //    policy =>
+            //    {
+            //        policy.AllowAnyOrigin()
+            //        .AllowAnyHeader()
+            //        .AllowAnyMethod();
+            //    });
+            //});
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -25,7 +67,9 @@ namespace ReactAPI
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
+            app.UseAuthentication();
 
+            //app.UseCors("MyAllowSpecificOrigins");
 
             app.MapControllers();
 
